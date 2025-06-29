@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/slicer-toolbox-core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/slicer-toolbox-gui/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/slicer_toolbox_ui/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/slicer-toolbox-cmd/target" />
       <excludeFolder url="file://$MODULE_DIR$/slicer-toolbox-core/target" />
       <excludeFolder url="file://$MODULE_DIR$/slicer-toolbox-gui/target" />

@@ -1,0 +1,86 @@
+import { Button, CheckBox, VerticalBox, HorizontalBox, StandardButton, TabWidget, StandardTableView } from "std-widgets.slint";
+
+component FileButton inherits Rectangle {
+    callback clicked();
+    in property <string> dir_path;
+    height: 48px;
+    HorizontalBox {
+        Button {
+            clicked => {
+                root.clicked();
+            }
+            text: "Select Folder";
+        }
+
+        TextInput {
+            vertical-alignment: center;
+            width: 300px;
+            read-only: true;
+            text: dir_path;
+        }
+    }
+}
+
+export struct RASCoordinate{
+    r: float,
+    a: float,
+    s: float,
+}
+
+export global Func {
+    pure callback create_data([{landmark: string, ras: RASCoordinate}]) -> [[StandardListViewItem]];
+}
+
+component MarkerTable inherits Rectangle {
+    in property <[{landmark: string, ras: RASCoordinate}]> coordinate_data;
+
+    table := StandardTableView {
+
+    }
+    states [
+        disabled when coordinate_data.length == 0: {
+            root.visible: false;
+        }
+        enabled when coordinate_data.length > 0: {
+            root.visible: true;
+            table.rows: Func.create_data(coordinate_data);
+        }
+    ]
+}
+
+export component App inherits Window {
+    callback start_processing();
+    callback file_btn_clicked();
+    in property <bool> can_start;
+    in property <string> dir_path;
+    in property <[{file: string, data: [{landmark: string, ras: RASCoordinate}]}]> coordinateData;
+
+    VerticalBox {
+        FileButton {
+            dir_path: dir_path;
+            clicked => {
+                root.file_btn_clicked()
+            }
+        }
+
+        HorizontalLayout {
+            alignment: end;
+            Button {
+                clicked => {
+                    start_processing()
+                }
+                enabled: can_start;
+                text: "Start";
+            }
+        }
+
+        TabWidget {
+            for data in coordinateData: Tab {
+                title: data.file;
+                MarkerTable {
+                    coordinate_data: data.data;
+                }
+            }
+        }
+    }
+}

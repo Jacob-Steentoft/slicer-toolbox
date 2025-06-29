@@ -7,7 +7,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  VCPKG_DEFAULT_TRIPLET: 'x64-windows-static-md'
 
 jobs:
   build:
@@ -18,30 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Set environmental variables"
-        shell: bash
-        run: |
-          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
-
       - name: Version
         run: |
           $content = Get-Content -Path "${{ github.workspace }}/slicer-toolbox-cmd/Cargo.toml" -Raw
           $null = $content -match 'version\s*=\s"(.*)"' 
           echo "VERSION=$($Matches.1)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-      - uses: lukka/get-cmake@latest
-        with:
-          useCloudCache: 'true'
-
-      - uses: lukka/run-vcpkg@v11
-        with:
-          runVcpkgInstall: 'true'
-          doNotCache: 'false'
-          vcpkgJsonGlob: '**/.deps/vcpkg.json'
-          vcpkgGitCommitId: '57c08a3223a1ec03c3a31986ee38d32e90b6039c'
-
-      - name: Integrate
-        run: vcpkg integrate install
 
       - name: Build
         run: cargo build -p slicer-toolbox-cmd --release --target-dir ${{ github.workspace }}/output/

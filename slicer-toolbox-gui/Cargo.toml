@@ -1,9 +1,0 @@
-[package]
-name = "slicer-toolbox-gui"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-iced = "0.13.1"
-rfd = { version = "0.15.2" }
-slicer-toolbox-core = {path = "../slicer-toolbox-core"}
