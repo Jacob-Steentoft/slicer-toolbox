@@ -1,0 +1,138 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug executable 'slicer-toolbox-cmd'",
+			"cargo": {
+				"args": [
+					"build",
+					"--bin=slicer-toolbox-cmd",
+					"--package=slicer-toolbox-cmd"
+				],
+				"filter": {
+					"name": "slicer-toolbox-cmd",
+					"kind": "bin"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug unit tests in executable 'slicer-toolbox-cmd'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--bin=slicer-toolbox-cmd",
+					"--package=slicer-toolbox-cmd"
+				],
+				"filter": {
+					"name": "slicer-toolbox-cmd",
+					"kind": "bin"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug unit tests in library 'slicer_toolbox_core'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--lib",
+					"--package=slicer-toolbox-core"
+				],
+				"filter": {
+					"name": "slicer_toolbox_core",
+					"kind": "lib"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug executable 'slicer_toolbox_ui'",
+			"cargo": {
+				"args": [
+					"build",
+					"--bin=slicer_toolbox_ui",
+					"--package=slicer_toolbox_ui"
+				],
+				"filter": {
+					"name": "slicer_toolbox_ui",
+					"kind": "bin"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug unit tests in executable 'slicer_toolbox_ui'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--bin=slicer_toolbox_ui",
+					"--package=slicer_toolbox_ui"
+				],
+				"filter": {
+					"name": "slicer_toolbox_ui",
+					"kind": "bin"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug executable 'slicer_toolbox_ui_v2'",
+			"cargo": {
+				"args": [
+					"build",
+					"--bin=slicer_toolbox_ui_v2",
+					"--package=slicer_toolbox_ui_v2"
+				],
+				"filter": {
+					"name": "slicer_toolbox_ui_v2",
+					"kind": "bin"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug unit tests in executable 'slicer_toolbox_ui_v2'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--bin=slicer_toolbox_ui_v2",
+					"--package=slicer_toolbox_ui_v2"
+				],
+				"filter": {
+					"name": "slicer_toolbox_ui_v2",
+					"kind": "bin"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		}
+	]
+}

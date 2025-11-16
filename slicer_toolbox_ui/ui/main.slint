@@ -75,12 +75,7 @@ export component App inherits Window {
         }
 
         TabWidget {
-            for data in coordinateData: Tab {
-                title: data.file;
-                MarkerTable {
-                    coordinate_data: data.data;
-                }
-            }
+
         }
     }
 }

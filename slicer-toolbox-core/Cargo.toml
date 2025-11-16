@@ -4,11 +4,11 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
-serde = { version = "1.0.219", features = ["default", "derive"] }
-serde_json = "1.0.140"
+serde = { version = "1.0.228", features = ["default", "derive"] }
+serde_json = "1.0.145"
 walkdir = "2.5.0"
-anyhow = "1.0.98"
+anyhow = "1.0.100"
 itertools = "0.14.0"
 merge-whitespace-utils = "1.1.0"
-icu_collator = "2.0.0"
-rc-zip-sync = "4.3.0"
+icu_collator = "2.1.1"
+rc-zip-sync = "4.3.3"

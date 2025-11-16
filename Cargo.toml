@@ -1,18 +1,18 @@
 [workspace]
-resolver = "3"
 members = [
-    "slicer-toolbox-core",
     "slicer-toolbox-cmd",
-    "slicer_toolbox_ui"]
+    "slicer-toolbox-core",
+    "slicer_toolbox_ui",
+    "slicer_toolbox_ui_v2",
+]
+resolver = "3"
 
-[profile]
-
-[profile.wasm-dev]
+[profile.android-dev]
 inherits = "dev"
-opt-level = 1
 
 [profile.server-dev]
 inherits = "dev"
 
-[profile.android-dev]
+[profile.wasm-dev]
+opt-level = 1
 inherits = "dev"

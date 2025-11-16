@@ -33,10 +33,6 @@ fn main() -> Result<(), PlatformError> {
         let parsed =
             slicer_toolbox_core::parse_from_slicer_data(&PathBuf::from(string.to_string()))
                 .unwrap();
-
-        parsed.into_iter().map(|(str, coords)| {})
-        app_ref.
-        app_ref.set_coordinateData()
     });
 
     app.run()
