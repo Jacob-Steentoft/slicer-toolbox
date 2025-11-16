@@ -1,5 +1,5 @@
 [package]
-name = "slicer_toolbox_ui_v2"
+name = "slicer-toolbox-ui"
 version = "0.1.0"
 authors = ["Jacob Steentoft <jacob@steentoft.net>"]
 edition = "2024"

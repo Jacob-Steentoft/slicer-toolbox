@@ -2,8 +2,7 @@
 members = [
     "slicer-toolbox-cmd",
     "slicer-toolbox-core",
-    "slicer_toolbox_ui",
-    "slicer_toolbox_ui_v2",
+    "slicer-toolbox-ui",
 ]
 resolver = "3"
 
