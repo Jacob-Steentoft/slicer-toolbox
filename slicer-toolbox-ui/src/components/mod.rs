@@ -1,6 +1,5 @@
 pub mod button;
 pub mod input;
 pub mod label;
-pub mod row;
-pub mod column;
+pub mod stack;
 pub mod separator;

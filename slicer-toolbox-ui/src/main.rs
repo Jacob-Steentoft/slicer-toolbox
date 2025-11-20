@@ -1,10 +1,8 @@
 use crate::components::button::{Button, ButtonVariant};
-use crate::components::column::Column;
 use crate::components::input::Input;
 use crate::components::label::Label;
-use crate::components::row::Row;
 use crate::components::separator::Separator;
-use dioxus::document::eval;
+use crate::components::stack::Stack;
 use dioxus::prelude::*;
 use rfd::FileDialog;
 use slicer_toolbox_core::Coord;
@@ -29,16 +27,14 @@ fn App() -> Element {
 		Stylesheet { href: MAIN_CSS }
 		Stylesheet { href: TAILWIND_CSS }
 		Stylesheet { href: COMPONENTS }
-		Column { class: "p-4", style: "width: 100%",
+		Stack { class: "p-4", style: "width: 100%",
 			Label { html_for: "file_path", "Search path" }
-
-				Input {
-					value: path,
-					placeholder: "Choose Folder",
-					readonly: true,
-					onclick: move |_| *path.write() = get_folder_path().unwrap_or(path.to_string()),
-				}
-
+			Input {
+				value: path,
+				placeholder: "Choose Folder",
+				readonly: true,
+				onclick: move |_| *path.write() = get_folder_path().unwrap_or(path.to_string()),
+			}
 			Separator { horizontal: true, decorative: true }
 			Button {
 				variant: ButtonVariant::Outline,
@@ -52,7 +48,8 @@ fn App() -> Element {
 fn get_folder_path() -> Option<String> {
 	FileDialog::new()
 		.set_title("Select folder to import from")
-		.pick_folder().map(|path| path.to_str().unwrap_or_default().to_string())
+		.pick_folder()
+		.map(|path| path.to_str().unwrap_or_default().to_string())
 }
 
 fn get_data(path: String) -> Vec<(String, HashMap<String, Coord>)> {
