@@ -3,7 +3,7 @@
 [web.app]
 
 # HTML title tag content
-title = "slicer_toolbox_ui_v2"
+title = "slicer-toolbox-ui"
 
 # include `assets` in web platform
 [web.resource]
