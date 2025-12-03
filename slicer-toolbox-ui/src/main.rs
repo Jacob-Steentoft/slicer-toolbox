@@ -3,9 +3,9 @@ use crate::components::stack::Stack;
 use dioxus::prelude::*;
 use rfd::FileDialog;
 use slicer_toolbox_core::Coord;
-use slicer_toolbox_core::csv::write_data_to_csv;
-use std::collections::HashMap;
+use slicer_toolbox_core::csv::write_statistics_to_csv;
 use std::path::PathBuf;
+use anyhow::Result;
 
 mod components;
 
@@ -27,37 +27,31 @@ fn App() -> Element {
 		Stylesheet { href: TAILWIND_CSS }
 
 		Stack { class: "m-4 h-full",
-			Stack { row: true,
-				input {
-					id: "file_path",
-					class: "input w-full",
-					r#type: "text",
-					value: path,
-					placeholder: "Choose Folder",
-					readonly: true,
-					onclick: move |_| *path.write() = get_folder_path().unwrap_or(path.to_string()),
-				}
-			}
-			button {
-				class: "btn btn-primary w-full",
-				disabled: !is_valid_folder(&path.read()),
+			input {
+				id: "file_path",
+				class: "input w-full",
+				r#type: "text",
+				value: path,
+				placeholder: "Import from folder",
+				readonly: true,
 				onclick: move |_| {
-				    let tableData = get_data(&path.read());
+				    *path.write() = get_folder_path().unwrap_or(path.to_string());
+				    let tableData = get_data(&path.read())?;
 				    *selected.write() = tableData.first().map(|i| i.0.clone()).unwrap_or_default();
 				    *data.write() = tableData;
+				    Ok(())
 				},
-				"Import"
 			}
 			if !data.is_empty() {
 				button {
 					class: "btn btn-primary",
 					onclick: move |_| {
 					    if let Some(save_path) = get_save_path() {
-					        write_data_to_csv(&save_path, &data.read()).context("Failed to write")?;
+					        write_statistics_to_csv(&save_path, &data.read())?;
 					    }
 					    Ok(())
 					},
-					"Export"
+					"Export CSV"
 				}
 				ul { class: "menu menu-horizontal bg-base-200 rounded-box flex-nowrap overflow-x-scroll w-full",
 					for (file_name , _) in data() {
@@ -86,6 +80,7 @@ fn App() -> Element {
 fn get_save_path() -> Option<PathBuf> {
 	FileDialog::new()
 		.set_title("Select CSV file to export to")
+		.set_file_name("data.csv")
 		.save_file()
 }
 
@@ -96,8 +91,8 @@ fn get_folder_path() -> Option<String> {
 		.map(|path| path.to_str().unwrap_or_default().to_string())
 }
 
-fn get_data(path: &str) -> Vec<(String, Vec<Coord>)> {
-	slicer_toolbox_core::parse_from_slicer_data(&PathBuf::from(path)).unwrap()
+fn get_data(path: &str) -> Result<Vec<(String, Vec<Coord>)>> {
+	slicer_toolbox_core::parse_from_slicer_data(&PathBuf::from(path))
 }
 
 fn is_valid_folder(path: &str) -> bool {

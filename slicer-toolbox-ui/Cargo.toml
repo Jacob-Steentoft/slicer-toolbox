@@ -11,6 +11,7 @@ dioxus = { version = "0.7.1"}
 rfd = "0.16"
 slicer-toolbox-core = {path = "../slicer-toolbox-core"}
 tailwind_fuse = "0.3.2"
+anyhow = "1.0.100"
 
 [features]
 default = ["desktop"]

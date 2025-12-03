@@ -1,9 +1,13 @@
 [application]
 
+[bundle]
+identifier = "jacob.steentoft.slicer.toolbox"
+publisher = "Jacob Steentoft"
+
 [web.app]
 
 # HTML title tag content
-title = "slicer-toolbox-ui"
+title = "Slicer Toolbox"
 
 # include `assets` in web platform
 [web.resource]

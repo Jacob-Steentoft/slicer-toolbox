@@ -744,8 +744,8 @@
   .table {
     display: table;
   }
-  .h-82 {
-    height: calc(var(--spacing) * 82);
+  .h-94 {
+    height: calc(var(--spacing) * 94);
   }
   .h-full {
     height: 100%;

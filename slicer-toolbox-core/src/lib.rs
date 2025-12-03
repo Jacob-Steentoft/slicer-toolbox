@@ -1,5 +1,5 @@
 pub mod csv;
-mod landmarks;
+pub mod landmarks;
 
 use crate::landmarks::{LANDMARK_HAYSTACK, Landmark};
 use anyhow::{Context, Result, anyhow};
@@ -8,8 +8,6 @@ use icu_collator::options::{AlternateHandling, CollatorOptions};
 use icu_collator::preferences::CollationNumericOrdering;
 use icu_collator::{Collator, CollatorPreferences};
 use itertools::Itertools;
-use norm::fzf::{FzfParser, FzfV1};
-use norm::{CaseSensitivity, Metric};
 use rc_zip_sync::ReadZip;
 use regex::Regex;
 use serde::Deserialize;
@@ -49,8 +47,7 @@ pub struct Coord {
 
 pub fn parse_from_slicer_data(path: &PathBuf) -> Result<Vec<(String, Vec<Coord>)>> {
 	let fuse = Fuse::default();
-	let regex = Regex::new(r"-\d*$")?;
-	let filename_regex = Regex::new(r".*/(\w*)\.")?;
+	let end_name = Regex::new(r"-\d*$")?;
 
 	let mut all_file_coords = Vec::new();
 	for entry_result in WalkDir::new(path).into_iter().filter(|x| {
@@ -77,7 +74,11 @@ pub fn parse_from_slicer_data(path: &PathBuf) -> Result<Vec<(String, Vec<Coord>)
 				.name
 				.split_once(".")
 				.context("Could not split file name")?;
-			let (_, landmark_file_name) = landmark_file_name.rsplit_once("/").into_iter().next_back().context("Could not split file name")?;
+			let (_, landmark_file_name) = landmark_file_name
+				.rsplit_once("/")
+				.into_iter()
+				.next_back()
+				.context("Could not split file name")?;
 			let slicer_markup = serde_json::from_reader::<_, SlicerMarkup>(file.reader())?;
 			for markup in slicer_markup.markups {
 				let coords = markup.coordinate_system;
@@ -91,29 +92,30 @@ pub fn parse_from_slicer_data(path: &PathBuf) -> Result<Vec<(String, Vec<Coord>)
 					let a = convert_to_ras(&chars, &'a', &'p', control_point.position)?;
 					let s = convert_to_ras(&chars, &'s', &'i', control_point.position)?;
 
-					let trimmed_landmark = regex.replace(&control_point.label, "");
+					let trimmed_landmark = end_name.replace(&control_point.label, "");
 
-					let mut results = fuse.search_text_in_iterable(landmark_file_name, LANDMARK_HAYSTACK);
-					let vec = fuse.search_text_in_iterable(&trimmed_landmark, LANDMARK_HAYSTACK);
-					results.extend(vec);
-
-					let result = results
+					let landmark = Landmark::from_str(landmark_file_name).or(fuse
+						.search_text_in_iterable(landmark_file_name, LANDMARK_HAYSTACK)
 						.iter()
 						.min_by(|result1, result2| {
 							result1.score.partial_cmp(&result2.score).unwrap()
-						}).context(anyhow!(
-							"Could not find landmark: {} in {} part of {}",
+						})
+						.or(fuse
+							.search_text_in_iterable(&trimmed_landmark, LANDMARK_HAYSTACK)
+							.iter()
+							.min_by(|result1, result2| {
+								result1.score.partial_cmp(&result2.score).unwrap()
+							}))
+						.context(anyhow!(
+							"Could not find landmark: {} or {} in {} part of {}",
 							trimmed_landmark,
+							landmark_file_name,
 							file_name,
 							file.name
-						))?;
+						))
+						.and_then(|result| Landmark::from_str(LANDMARK_HAYSTACK[result.index])))?;
 
-					all_coords.push(Coord {
-						landmark: Landmark::from_str(LANDMARK_HAYSTACK[result.index])?,
-						r,
-						a,
-						s,
-					});
+					all_coords.push(Coord { landmark, r, a, s });
 				}
 			}
 		}

@@ -1,4 +1,5 @@
 use anyhow::anyhow;
+use enum_all_variants::AllVariants;
 
 pub static LANDMARK_HAYSTACK: &[&str] = &[
 	"S",
@@ -55,7 +56,7 @@ pub static LANDMARK_HAYSTACK: &[&str] = &[
 	"Orbitale, L",
 ];
 
-#[derive(Debug, Clone, Copy, PartialEq,Ord, PartialOrd, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Ord, PartialOrd, Eq, AllVariants)]
 pub enum Landmark {
 	S,
 	N,
