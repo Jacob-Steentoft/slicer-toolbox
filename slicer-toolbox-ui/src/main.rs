@@ -3,7 +3,7 @@ use crate::components::stack::Stack;
 use dioxus::prelude::*;
 use rfd::FileDialog;
 use slicer_toolbox_core::Coord;
-use slicer_toolbox_core::csv::write_statistics_to_csv;
+use slicer_toolbox_core::export::write_statistics_to_csv;
 use std::path::PathBuf;
 use anyhow::Result;
 

@@ -1,5 +1,6 @@
-pub mod csv;
+pub mod export;
 pub mod landmarks;
+mod slicer_data;
 
 use crate::landmarks::{LANDMARK_HAYSTACK, Landmark};
 use anyhow::{Context, Result, anyhow};
@@ -16,26 +17,7 @@ use std::ops::Neg;
 use std::path::PathBuf;
 use std::str::FromStr;
 use walkdir::WalkDir;
-
-#[derive(Deserialize, Debug)]
-#[serde(rename_all(deserialize = "camelCase"))]
-pub struct SlicerMarkup {
-	pub markups: Vec<Markups>,
-}
-
-#[derive(Deserialize, Debug)]
-#[serde(rename_all(deserialize = "camelCase"))]
-pub struct Markups {
-	pub coordinate_system: String,
-	pub control_points: Vec<ControlPoint>,
-}
-
-#[derive(Deserialize, Debug)]
-#[serde(rename_all(deserialize = "camelCase"))]
-pub struct ControlPoint {
-	pub label: String,
-	pub position: [f64; 3],
-}
+use crate::slicer_data::SlicerMarkup;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Coord {
@@ -62,7 +44,7 @@ pub fn parse_from_slicer_data(path: &PathBuf) -> Result<Vec<(String, Vec<Coord>)
 			.to_string();
 
 		let file =
-			File::open(entry.path()).context(format!("Could not open file: {}", file_name))?;
+			File::open(entry.path()).context(format!("Could not open file: {}", entry.file_name().display()))?;
 
 		let mut all_coords = Vec::new();
 		for file in file
