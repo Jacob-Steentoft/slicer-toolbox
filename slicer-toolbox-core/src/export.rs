@@ -1,13 +1,10 @@
 use crate::landmarks::Landmark;
-use crate::Coord;
+use crate::{MarkedPoint, Subject};
 use csv::Writer;
 use std::fs::File;
 use std::path::Path;
 
-pub fn write_statistics_to_csv(
-	path: &Path,
-	all_file_coords: &[(String, Vec<Coord>)],
-) -> anyhow::Result<()> {
+pub fn write_statistics_to_csv(path: &Path, subjects: &[Subject]) -> anyhow::Result<()> {
 	let mut writer = Writer::from_writer(File::create(path)?);
 
 	let landmarks = Landmark::all_variants();
@@ -20,11 +17,12 @@ pub fn write_statistics_to_csv(
 
 	new_line(&mut writer)?;
 
-	for (name, coord_per_land) in all_file_coords {
-		writer.write_field(name)?;
+	for subject in subjects {
+		writer.write_field(&subject.name)?;
 
 		for landmark in landmarks {
-			match coord_per_land
+			match subject
+				.landmarks
 				.iter()
 				.find(|coord| coord.landmark == *landmark)
 			{
@@ -38,42 +36,6 @@ pub fn write_statistics_to_csv(
 				}
 			}
 		}
-		new_line(&mut writer)?;
-	}
-
-	writer.flush()?;
-	Ok(())
-}
-
-pub fn write_data_to_csv(
-	path: &Path,
-	all_file_coords: &[(String, Vec<Coord>)],
-) -> anyhow::Result<()> {
-	let mut writer = Writer::from_writer(File::create(path)?);
-
-	for (name, _) in all_file_coords {
-		writer.write_field(name)?;
-		writer.write_field("R")?;
-		writer.write_field("A")?;
-		writer.write_field("S")?;
-	}
-	new_line(&mut writer)?;
-
-	for landmark in Landmark::all_variants() {
-		for (_, coord_per_land) in all_file_coords {
-			writer.write_field(landmark.as_str())?;
-			match coord_per_land.iter().find(|x| x.landmark == *landmark) {
-				None => {
-					write_filler_lines(&mut writer, 3)?;
-				}
-				Some(coord) => {
-					writer.write_field(coord.r.to_string())?;
-					writer.write_field(coord.a.to_string())?;
-					writer.write_field(coord.s.to_string())?;
-				}
-			}
-		}
-
 		new_line(&mut writer)?;
 	}
 

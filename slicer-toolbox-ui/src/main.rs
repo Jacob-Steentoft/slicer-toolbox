@@ -1,11 +1,11 @@
 use crate::components::coord_table::CoordTable;
 use crate::components::stack::Stack;
+use anyhow::Result;
 use dioxus::prelude::*;
 use rfd::FileDialog;
-use slicer_toolbox_core::Coord;
+use slicer_toolbox_core::Subject;
 use slicer_toolbox_core::export::write_statistics_to_csv;
 use std::path::PathBuf;
-use anyhow::Result;
 
 mod components;
 
@@ -19,8 +19,8 @@ fn main() {
 #[component]
 fn App() -> Element {
 	let mut path = use_signal(String::new);
-	let mut data = use_signal(Vec::<(String, Vec<Coord>)>::new);
-	let mut selected = use_signal(String::new);
+	let mut subjects = use_store(Vec::<Subject>::new);
+	let mut selected_subject = use_signal(String::new);
 
 	rsx! {
 		Stylesheet { href: MAIN_CSS }
@@ -35,42 +35,40 @@ fn App() -> Element {
 				placeholder: "Import from folder",
 				readonly: true,
 				onclick: move |_| {
-				    *path.write() = get_folder_path().unwrap_or(path.to_string());
-				    let tableData = get_data(&path.read())?;
-				    *selected.write() = tableData.first().map(|i| i.0.clone()).unwrap_or_default();
-				    *data.write() = tableData;
-				    Ok(())
+					*path.write() = get_folder_path().unwrap_or(path.to_string());
+					let tableData = get_data(&path.read())?;
+					*subjects.write() = tableData;
+					*selected_subject.write() = subjects().iter().map(|x| x.name.clone()).next().unwrap_or_default();
+					Ok(())
 				},
 			}
-			if !data.is_empty() {
+			if !subjects.is_empty() {
 				button {
 					class: "btn btn-primary",
 					onclick: move |_| {
-					    if let Some(save_path) = get_save_path() {
-					        write_statistics_to_csv(&save_path, &data.read())?;
-					    }
-					    Ok(())
+						if let Some(save_path) = get_save_path() {
+							write_statistics_to_csv(&save_path, &subjects())?;
+						}
+						Ok(())
 					},
 					"Export CSV"
 				}
 				ul { class: "menu menu-horizontal bg-base-200 rounded-box flex-nowrap overflow-x-scroll w-full",
-					for (file_name , _) in data() {
+					for subject in subjects() {
 						ul {
 							button {
 								class: "btn btn-sm btn-ghost text-nowrap",
-								onclick: move |_| selected.set(file_name.clone()),
-								{file_name.as_str().replace(".mrb", "")}
+								onclick: move |_| selected_subject.set(subject.name.clone()),
+								{subject.name.as_str().replace(".mrb", "")}
 							}
 						}
 					}
 				}
-				if let Some((_, tableData)) = data
-				    .read()
-				    .iter()
-				    .find(|(name, _)| *name == *selected.read())
+				if let Some(subject) = subjects.iter().find(|subject| subject.read().name == *selected_subject.read())
 				{
-					CoordTable { data: tableData.clone() }
+					CoordTable { subject }
 				}
+
 			}
 		}
 
@@ -91,11 +89,6 @@ fn get_folder_path() -> Option<String> {
 		.map(|path| path.to_str().unwrap_or_default().to_string())
 }
 
-fn get_data(path: &str) -> Result<Vec<(String, Vec<Coord>)>> {
+fn get_data(path: &str) -> Result<Vec<Subject>> {
 	slicer_toolbox_core::parse_from_slicer_data(&PathBuf::from(path))
-}
-
-fn is_valid_folder(path: &str) -> bool {
-	let buf = PathBuf::from(path);
-	buf.exists() && buf.is_dir()
 }

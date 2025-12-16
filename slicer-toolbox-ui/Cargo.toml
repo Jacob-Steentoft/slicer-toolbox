@@ -7,7 +7,7 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.7.1"}
+dioxus = { version = "0.7.2"}
 rfd = "0.16"
 slicer-toolbox-core = {path = "../slicer-toolbox-core"}
 tailwind_fuse = "0.3.2"

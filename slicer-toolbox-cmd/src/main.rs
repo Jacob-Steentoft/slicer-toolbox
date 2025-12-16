@@ -1,6 +1,6 @@
 use anyhow::{Result, anyhow};
 use rfd::FileDialog;
-use slicer_toolbox_core::export::{write_data_to_csv, write_statistics_to_csv};
+use slicer_toolbox_core::export::write_statistics_to_csv;
 use slicer_toolbox_core::parse_from_slicer_data;
 
 fn main() -> Result<()> {
@@ -14,7 +14,6 @@ fn main() -> Result<()> {
 	let all_file_coords = parse_from_slicer_data(&path)?;
 
 	// Data creation
-	write_data_to_csv(&path, &all_file_coords)?;
 	write_statistics_to_csv(&path, &all_file_coords)?;
 
 	dont_disappear::any_key_to_continue::default();
