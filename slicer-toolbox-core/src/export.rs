@@ -1,5 +1,5 @@
 use crate::landmarks::Landmark;
-use crate::{MarkedPoint, Subject};
+use crate::Subject;
 use csv::Writer;
 use std::fs::File;
 use std::path::Path;

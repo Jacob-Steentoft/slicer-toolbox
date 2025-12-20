@@ -2,6 +2,7 @@ use anyhow::anyhow;
 use enum_all_variants::AllVariants;
 
 #[derive(Debug, Clone, Copy, PartialEq, Ord, PartialOrd, Eq, AllVariants)]
+#[derive(Hash)]
 pub enum Landmark {
 	S,
 	N,
