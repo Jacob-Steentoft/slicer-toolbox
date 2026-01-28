@@ -1,3 +1,4 @@
+pub mod aggregations;
 pub mod export;
 pub mod landmarks;
 mod slicer_data;
@@ -12,7 +13,6 @@ use itertools::Itertools;
 use rc_zip_sync::ReadZip;
 use regex::Regex;
 use statrs::statistics::Statistics;
-use std::collections::HashMap;
 use std::fs::File;
 use std::ops::Neg;
 use std::path::PathBuf;
@@ -25,6 +25,12 @@ pub struct MarkedPoint {
 	pub r: f64,
 	pub a: f64,
 	pub s: f64,
+}
+
+impl MarkedPoint {
+	pub fn mean(&self) -> f64 {
+		[self.r, self.a, self.s].mean()
+	}
 }
 
 #[derive(Debug, Clone)]
@@ -158,70 +164,4 @@ fn convert_to_ras(
 			positive,
 			negative
 		))
-}
-
-pub fn calculate_reviewer_std_dev(
-	reviewer_data: &[ReviewerData],
-) -> HashMap<Landmark, Vec<(String, f64)>> {
-	let unique_subjects = reviewer_data
-		.iter()
-		.flat_map(|x| x.subjects.iter().map(|y| y.name.as_str()))
-		.dedup()
-		.collect_vec();
-	let landmarks = Landmark::all_variants();
-
-	let mut landmark_std_dev = HashMap::<Landmark, Vec<(String, f64)>>::default();
-	for landmark in landmarks {
-		for unique_subject in &unique_subjects {
-			let mut subject_landmarks = Vec::new();
-
-			let reviewer_subject = reviewer_data
-				.iter()
-				.map(|reviewer_data| {
-					(
-						&reviewer_data.name,
-						reviewer_data
-							.subjects
-							.iter()
-							.find(|subject| subject.name.eq(unique_subject)),
-					)
-				})
-				.collect_vec();
-
-			if let Some(marked) = reviewer_subject.iter().find_map(|(_, subject)| {
-				subject.iter().find_map(|subject| {
-					subject
-						.landmarks
-						.iter()
-						.find(|marked| marked.landmark.eq(landmark))
-				})
-			}) {
-				subject_landmarks.push(marked);
-			};
-
-			landmark_std_dev.entry(*landmark).or_default().push((
-				unique_subject.to_string(),
-				calc_positional_std_dev_for_subject(&subject_landmarks),
-			));
-		}
-	}
-	landmark_std_dev
-}
-
-// Distance-based Standard Deviation (Variability from Mean Point)
-fn calc_positional_std_dev_for_subject(reviewer_points: &[&MarkedPoint]) -> f64 {
-	if reviewer_points.is_empty() {
-		return 0.;
-	}
-
-	let mean_r = reviewer_points.iter().map(|p| p.r).mean();
-	let mean_a = reviewer_points.iter().map(|p| p.a).mean();
-	let mean_s = reviewer_points.iter().map(|p| p.s).mean();
-
-	let distances = reviewer_points
-		.iter()
-		.map(|p| ((p.r - mean_r).powi(2) + (p.a - mean_a).powi(2) + (p.s - mean_s).powi(2)).sqrt())
-		.collect_vec();
-
-	distances.std_dev()
 }

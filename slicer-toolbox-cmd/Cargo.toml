@@ -5,6 +5,6 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.100"
-rfd = { version = "0.16" }
+rfd = { version = "0.17.2" }
 slicer-toolbox-core = { path = "../slicer-toolbox-core"}
 dont_disappear = "3.0.1"
